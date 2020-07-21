@@ -30,7 +30,11 @@ function getDB(dbName, table)
 
 //получить список узлов
 app.get('/:db/:entity', function (req, res) {
-	getDB(req.params.db, req.params.entity).find({}, function (error, data) {
+	//console.log(JSON.parse(req.query.body))
+
+	let query = JSON.parse(req.query.body)
+
+	getDB(req.params.db, req.params.entity).find(query, function (error, data) {
 		res.send(data)
 	})	
 })
@@ -38,7 +42,7 @@ app.get('/:db/:entity', function (req, res) {
 //получить узел по id
 app.get('/:db/:entity/:id', function (req, res) {
 	getDB(req.params.db, req.params.entity).find({"_id":req.params.id}, function (error, data) {
-		res.send(data)
+		res.send(data[0])
 	})	
 })
 
@@ -74,4 +78,4 @@ app.delete('/:db/:entity/:id', function (req, res) {
 })
 
 
-app.listen(3000)
+app.listen(8077)
