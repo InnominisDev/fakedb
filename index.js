@@ -1,6 +1,10 @@
 var express = require('express')
 var app = express()
 
+var ls = require('./helpers/list_all')
+
+var Datastore = require('nedb')
+
 var cors = require('cors')
 
 const bodyParser = require('body-parser');
@@ -16,21 +20,28 @@ var currentDB = {}
 
 function getDB(dbName, table)
 {
-	var Datastore = require('nedb')
 	var slug = dbName+"_"+table
 	if ( currentDB[slug] ) {
 		return currentDB[slug]
 	} else {
-		currentDB[slug] = new Datastore({ filename: dbName +"/"+ table, autoload: true });
+		currentDB[slug] = new Datastore({ filename: "repositories/" + dbName +"/"+ table, autoload: true });
 		return currentDB[slug]
 	}
 
 }
 
 
+// //получить список репозиторив
+app.get('/repositories', function (req, res) {
+
+	let data = ls('repositories')
+	res.send(data)
+		
+})
+
+
 //получить список узлов
 app.get('/:db/:entity', function (req, res) {
-	//console.log(JSON.parse(req.query.body))
 
 	let query = JSON.parse(req.query.body)
 
@@ -49,15 +60,9 @@ app.get('/:db/:entity/:id', function (req, res) {
 //создать узел
 app.post('/:db/:entity', function (req, res) {
 
-	// console.log(req.body)
-	// res.send(req.body)
-
 	getDB(req.params.db, req.params.entity).insert(req.body, function (err, newDoc) {  
 		res.send(newDoc)
 	});
-	// getDB(req.params.db, req.params.entity).find({}, function (error, data) {
-	// 	res.send(data)
-	// })	
 	
 })
 
